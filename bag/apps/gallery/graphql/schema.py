@@ -12,7 +12,7 @@ def get_self_uri(request):
 
 
 class ImageNode(DjangoObjectType):
-    image_url = graphene.String()
+    image_url = graphene.NonNull(graphene.String)
 
     class Meta:
         model = Image
@@ -25,7 +25,7 @@ class ImageNode(DjangoObjectType):
 
 
 class GalleryNode(DjangoObjectType):
-    thumbnail = graphene.String()
+    thumbnail = graphene.NonNull(graphene.String)
 
     class Meta:
         model = Gallery
