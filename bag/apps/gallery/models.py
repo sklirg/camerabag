@@ -24,14 +24,14 @@ class Image(models.Model):
     title = models.TextField()
     description = models.TextField(blank=True, null=True)
     datetime = models.DateTimeField()
-    file = models.FileField()
+    image_file = models.FileField()
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     gallery = models.ForeignKey(Gallery, null=True, blank=True, on_delete=models.SET_NULL)
 
     @property
     def image_url(self):
-        return f"{settings.MEDIA_URL}{self.file}"
+        return f"{settings.MEDIA_URL}{self.image_file}"
 
     def __str__(self):
         return self.title
