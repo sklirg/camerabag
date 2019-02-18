@@ -6,6 +6,7 @@ from django.db import models
 
 class Gallery(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    slug = models.SlugField()
     title = models.TextField()
     description = models.TextField(blank=True, null=True)
     thumbnail = models.URLField()
