@@ -11,6 +11,9 @@ mypy = "*"
 graphene-django = "*"
 django-filter = "*"
 django-cors-headers = "*"
+exifread = "*"
+psycopg2 = "*"
+dj-database-url = "*"
 
 [requires]
 python_version = "3.7"
