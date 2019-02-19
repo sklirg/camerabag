@@ -11,6 +11,7 @@ class Gallery(models.Model):
     title = models.TextField()
     description = models.TextField(blank=True, null=True)
     thumbnail = models.URLField()
+    public = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -30,6 +31,7 @@ class Image(models.Model):
     longitude = models.FloatField(blank=True, null=True)
     gallery = models.ForeignKey(Gallery, null=True, blank=True, on_delete=models.SET_NULL)
     exif = JSONField(blank=True, null=True)
+    public = models.BooleanField(default=False)
 
     @property
     def image_url(self):
