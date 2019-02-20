@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  django:
+    image: sklirg/camerabag
+    volumes:
+      - /media/images:/images
+    environment:
+      - DATABASE_URL
+      - CB_SECRET_KEY
+    labels:
+      - "traefik.camerabag.frontend.rule=Host:images.sklirg.io"
