@@ -2,7 +2,7 @@ version: "3"
 
 services:
   django:
-    image: sklirg/camerabag
+    image: sklirg/camerabag:v1.0.0
     volumes:
       - /media/images:/app/media
     environment:
