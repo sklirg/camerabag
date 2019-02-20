@@ -24,11 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('CB_SECRET_KEY', '(8_6qiej*ga!ux=@^c29%^w(88w%zh2=8qfk%_d@so64!#pu+u')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('CB_DJANGO_DEBUG', '').lower() == 'true'
 
-ALLOWED_HOSTS = [
-    'camerabag.sklirg.io',
-]
+ALLOWED_HOSTS = os.getenv('CB_ALLOWED_HOSTS', 'camerabag.sklirg.io').replace(' ', '').split(',')
 
 
 # Application definition
