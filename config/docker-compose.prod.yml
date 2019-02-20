@@ -4,7 +4,7 @@ services:
   django:
     image: sklirg/camerabag
     volumes:
-      - /media/images:/images
+      - /media/images:/app/media
     environment:
       - DATABASE_URL
       - CB_SECRET_KEY
