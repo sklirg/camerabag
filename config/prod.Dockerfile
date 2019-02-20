@@ -3,7 +3,7 @@ FROM python:3.7-alpine
 EXPOSE 8000
 VOLUME /app/media/images
 
-RUN mkdir /app
+RUN mkdir -p /app
 WORKDIR /app
 
 COPY Pipfile Pipfile.lock ./
