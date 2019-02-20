@@ -27,7 +27,7 @@ SECRET_KEY = os.getenv('CB_SECRET_KEY', '(8_6qiej*ga!ux=@^c29%^w(88w%zh2=8qfk%_d
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'images.sklirg.io',
+    'camerabag.sklirg.io',
 ]
 
 
