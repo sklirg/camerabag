@@ -12,11 +12,17 @@ RUN apk add --no-cache --virtual .build-deps --update \
     python3-dev \
     musl-dev \
     postgresql-dev \
+    build-base \
+    linux-headers \
+    pcre-dev \
     && pip3 install --no-cache-dir pipenv \
     && pipenv install --deploy --system \
     && apk del --no-cache .build-deps \
-    && apk add --no-cache libpq
+    && apk add --no-cache libpq pcre-dev
 
+COPY config/uwsgi.ini .
 COPY bag .
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN python manage.py collectstatic --noinput
+
+CMD ["uwsgi", "--ini", "uwsgi.ini"]
