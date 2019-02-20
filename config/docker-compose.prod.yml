@@ -9,4 +9,13 @@ services:
       - DATABASE_URL
       - CB_SECRET_KEY
     labels:
-      - "traefik.camerabag.frontend.rule=Host:images.sklirg.io"
+      - "traefik.camerabag.frontend.rule=Host:camerabag.sklirg.io"
+  nginx:
+    image: nginx:mainline-alpine
+    volumes:
+      - ./nginx-s3-proxy.conf:/etc/nginx/nginx.conf:ro
+      - /var/www/html:/var/www/html
+    labels:
+      - "traefik.frontend.passHostHeader=true"
+      - "traefik.images.frontend.rule=Host:images.sklirg.io"
+      - "traefik.port=80"
