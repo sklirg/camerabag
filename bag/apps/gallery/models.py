@@ -46,4 +46,4 @@ class Image(models.Model):
         return self.title
 
     class Meta:
-        ordering = ['-timestamp', '-filename', '-title']
+        ordering = ['-datetime', '-title', '-image_file']
