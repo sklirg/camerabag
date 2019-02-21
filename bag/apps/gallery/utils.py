@@ -48,6 +48,7 @@ async def create_images_from_files(gallery, path, create=True):
             title=file_name,
             datetime=image_timestamp,
             image_file=image_file_path,
+            thumbnail_file=image_file_path.replace(".jpg", "_thumb.jpg"),
             gallery=gallery,
             exif=exif_json,
         )
