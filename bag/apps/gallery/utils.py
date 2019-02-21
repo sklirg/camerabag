@@ -35,6 +35,10 @@ async def create_images_from_files(gallery, path, create=True):
     image_objects = []
 
     for file_name in files:
+        # Yolo hack
+        if "_thumb.jpg" in file_name:
+            continue
+
         image_file_path = f"{gallery.id}/{file_name}"
         exif_data = read_exif_data(os.path.join(path, file_name))
 
