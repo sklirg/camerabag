@@ -10,7 +10,7 @@ class Gallery(models.Model):
     slug = models.SlugField()
     title = models.TextField()
     description = models.TextField(blank=True, null=True)
-    thumbnail = models.URLField()
+    thumbnail = models.URLField(blank=True, null=True)
     public = models.BooleanField(default=False)
 
     def __str__(self):
