@@ -36,16 +36,10 @@ class Image(models.Model):
 
     @property
     def image_url(self):
-        if settings.USE_S3:
-            return get_s3_url(self.gallery.id, self.image_file)
-
         return f"{settings.MEDIA_URL}{self.image_file}"
 
     @property
     def image_thumb_url(self):
-        if settings.USE_S3:
-            return get_s3_url(self.gallery.id, self.image_file)
-
         return f"{settings.MEDIA_URL}{self.thumbnail_file}"
 
     def __str__(self):
@@ -53,9 +47,3 @@ class Image(models.Model):
 
     class Meta:
         ordering = ['datetime', 'title', 'image_file']
-
-
-# Utils
-
-def get_s3_url(gallery_id, image_file):
-    return f"{settings.MEDIA_URL}{gallery_id}/{image_file}"
