@@ -18,7 +18,7 @@ RUN apk add --no-cache --virtual .build-deps --update \
     && pip3 install --no-cache-dir pipenv \
     && pipenv install --deploy --system \
     && apk del --no-cache .build-deps \
-    && apk add --no-cache libpq pcre-dev
+    && apk add --no-cache libpq pcre-dev mailcap
 
 COPY config/uwsgi.ini .
 COPY bag .
