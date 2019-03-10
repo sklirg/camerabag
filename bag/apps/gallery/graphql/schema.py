@@ -1,5 +1,7 @@
 import graphene
 
+from django.conf import settings
+
 from graphene import relay, ObjectType
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
@@ -31,8 +33,10 @@ class ImageNode(DjangoObjectType):
         return None
 
     def resolve_image_url(self, info):
-        server_path = f"{get_self_uri(info.context)}{self.image_url}"
-        return server_path
+        if not settings.USE_S3:
+            return f"{get_self_uri(info.context)}{self.image_url}"
+
+        return self.image_url
 
 
 class GalleryNode(DjangoObjectType):
@@ -55,9 +59,12 @@ class GalleryNode(DjangoObjectType):
         return None
 
     def resolve_thumbnail(self, info):
-        if self.image_set.count() == 0:
+        if self.thumbnail or self.image_set.count() == 0:
             return self.thumbnail
-        return f"{get_self_uri(info.context)}{self.image_set.all()[0].image_url}"
+        if not settings.USE_S3:
+            return f"{get_self_uri(info.context)}{self.image_set.first().image_url}"
+
+        return self.image_set.first().image_url
 
 
 class Query(object):
