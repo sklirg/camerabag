@@ -8,6 +8,7 @@ services:
     environment:
       - DATABASE_URL
       - CB_SECRET_KEY
+      - CB_S3_BUCKET
     deploy:
       mode: replicated
       replicas: 5
