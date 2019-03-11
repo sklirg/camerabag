@@ -21,8 +21,9 @@ RUN apk add --no-cache --virtual .build-deps --update \
     && apk add --no-cache libpq pcre-dev mailcap
 
 COPY config/uwsgi.ini .
+COPY config/docker-entrypoint.sh .
 COPY bag .
 
 RUN python manage.py collectstatic --noinput
 
-CMD ["uwsgi", "--ini", "uwsgi.ini"]
+ENTRYPOINT [ "/app/docker-entrypoint.sh" ]
