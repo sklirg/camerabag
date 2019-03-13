@@ -129,6 +129,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 S3_BUCKET = os.getenv('CB_S3_BUCKET', '')
 USE_S3 = S3_BUCKET != ''
+S3_BUCKET_ID = '' if not USE_S3 else \
+    (S3_BUCKET[:-1].split('/')[-1] if S3_BUCKET[-1] == '/' else S3_BUCKET.split('/')[-1])
 
 MEDIA_URL = S3_BUCKET if USE_S3 else '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

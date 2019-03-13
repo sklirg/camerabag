@@ -2,6 +2,7 @@ import json
 import os
 import pytz
 
+from dateutil.parser import parse
 from datetime import datetime
 from django.conf import settings
 from django.utils import timezone
@@ -90,6 +91,24 @@ def exif_data_to_python_dict(data):
 def get_datetime_from_exif(exif_datetime, tz_name=DEFAULT_TZ):
     # Example format:
     # 2019:02:07 12:13:01
-    dt = datetime.strptime(str(exif_datetime), "%Y:%m:%d %H:%M:%S")
+
+    dt = try_parse_date(str(exif_datetime))
     dt = dt.replace(tzinfo=pytz.timezone(tz_name))
     return dt
+
+
+def try_parse_date(date_string):
+    parser_formats = [
+        "%Y:%m:%d %H:%M:%S",
+        "%Y:%m:%d %H:%M:%S%z",
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%d %H:%M:%S%z",
+    ]
+    err = None
+    for fmt in parser_formats:
+        try:
+            return datetime.strptime(str(date_string), fmt)
+        except ValueError as e:
+            err = e
+            continue
+    raise err
