@@ -14,8 +14,6 @@ def get_self_uri(request):
 
 
 class ImageNode(DjangoObjectType):
-    image_url = graphene.NonNull(graphene.String)
-
     class Meta:
         model = Image
         filter_fields = ['title', 'datetime']
@@ -31,12 +29,6 @@ class ImageNode(DjangoObjectType):
         if image.public:
             return image
         return None
-
-    def resolve_image_url(self, info):
-        if not settings.USE_S3:
-            return f"{get_self_uri(info.context)}{self.image_url}"
-
-        return self.image_url
 
 
 class GalleryNode(DjangoObjectType):
@@ -61,8 +53,6 @@ class GalleryNode(DjangoObjectType):
     def resolve_thumbnail(self, info):
         if self.thumbnail or self.image_set.count() == 0:
             return self.thumbnail
-        if not settings.USE_S3:
-            return f"{get_self_uri(info.context)}{self.image_set.first().image_url}"
 
         return self.image_set.first().image_url
 
