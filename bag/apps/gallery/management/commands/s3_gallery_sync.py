@@ -51,7 +51,7 @@ def list_s3_bucket_objects(bucket_name, max_keys=1000, verbosity=0):
 
     # Client and request
     client = boto3.client('s3')
-    while has_more and counter < 1:
+    while has_more and counter < 10:
         response = client.list_objects_v2(**kwargs)
 
         # USE IS TRUNCATED
