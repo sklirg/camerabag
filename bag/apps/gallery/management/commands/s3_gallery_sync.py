@@ -79,7 +79,12 @@ def list_s3_bucket_objects(bucket_name, max_keys=1000, verbosity=0):
 
     for obj in objects:
         key = obj.get('Key')
-        (gallery, image) = key.split('/')
+        components = key.split('/')
+        if len(components) != 2:
+            print(f"Skipping object {key}")
+            continue
+
+        (gallery, image) = components
 
         if gallery not in galleries:
             galleries.append(gallery)
