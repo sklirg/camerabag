@@ -20,6 +20,7 @@ class Command(BaseCommand):
         parser.add_argument('-g', '--gallery_id', type=str,
                             help="ID of a specific gallery")
         parser.add_argument('-m', '--max-keys', type=int,
+                            default=1000,
                             help="Maximum number of keys to fetch")
 
     def handle(self, *args, **kwargs):
@@ -27,7 +28,7 @@ class Command(BaseCommand):
         bucket_name = _bucket_name if _bucket_name else settings.S3_BUCKET_ID
         gallery_id = kwargs.get('gallery_id', '')
         verbosity = kwargs.get('verbosity')
-        max_keys = kwargs.get('max_keys', 1000)
+        max_keys = kwargs.get('max_keys')
 
         print(f"Syncing bucket '{bucket_name}'")
         list_s3_bucket_objects(
