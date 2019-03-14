@@ -100,7 +100,8 @@ def list_s3_bucket_objects(bucket_name, max_keys=1000, verbosity=0):
             continue
 
         if '_thumb' in key:
-            print(f"Skipping thumb files.")
+            if verbosity >= 2:
+                print(f"Skipping thumb file.")
             continue
 
         # All checks passed, this is an image.
@@ -174,14 +175,23 @@ def update_metadata_objects(image_keys, bucket, verbosity=0):
     print(f"Found cached s3 objects for " +
           f"{len(objects_to_update)}/{len(image_keys)} objects")
 
+    counter = 0
+    poke_every = min(50, len(objects_to_update) // 100)
+
+    print(f"Starting metadata update for {len(objects_to_update)} items. " +
+          f"Updating every {poke_every} updates.")
     for obj in objects_to_update:
+        if counter % poke_every == 0:
+            print(f"{counter}/{len(objects_to_update)}")
         update_metadata(obj, bucket, verbosity=verbosity)
+        counter += 1
 
 
 def update_metadata(key, bucket, verbosity=0):
     client = boto3.client('s3')
 
-    print(f"Updating metadata for {key}")
+    if verbosity >= 2:
+        print(f"Updating metadata for {key}")
 
     (gallery, image) = key.split('/')
     if not (gallery and image):
@@ -220,4 +230,5 @@ def update_metadata(key, bucket, verbosity=0):
     image_to_update.exif_data = exif_python_data
     image_to_update.save()
 
-    print(f"Updated {key} successfully")
+    if verbosity >= 2:
+        print(f"Updated {key} successfully")
