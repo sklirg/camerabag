@@ -43,33 +43,28 @@ def list_s3_bucket_objects(bucket_name, max_keys=1000, verbosity=0):
     continuation_token = ''
     counter = 0
     has_more = True
+    kwargs = {
+        'Bucket': bucket_name,
+        'MaxKeys': max_keys,
+    }
 
     # Client and request
     client = boto3.client('s3')
     while has_more and counter < 1:
-        if continuation_token:
-            new_objects = client.list_objects_v2(
-                Bucket=bucket_name,
-                ContinuationToken=continuation_token,
-            )
-            continuation_token = ''
-        elif last_key:
-            new_objects = client.list_objects_v2(
-                Bucket=bucket_name,
-                StartAfter=last_key,
-            )
-            last_key = ''
-        else:
-            response = client.list_objects_v2(
-                Bucket=bucket_name, MaxKeys=max_keys)
+        response = client.list_objects_v2(**kwargs)
 
         # USE IS TRUNCATED
         has_more = response.get('IsTruncated', False)
         new_objects = response.get('Contents', [])
         last_key = new_objects[-1].get('Key', '')
+        total_keys = response.get('KeyCount')
+
         continuation_token = response.get('NextContinuationToken', '')
-        print(f"Fetched {len(new_objects)} items. " +
-              f"Asked to retry after '{last_key}' with '{continuation_token}' ")
+        print(f"Fetched {len(new_objects)} items. Total: {total_keys}")
+        if has_more:
+            print(f"Asked to retry after '{last_key}' " +
+                  f"with '{continuation_token}' ")
+            kwargs['ContinuationToken'] = continuation_token
 
         objects.extend(new_objects)
         counter += 1
