@@ -27,8 +27,8 @@ class Command(BaseCommand):
         _bucket_name = kwargs.get('bucket_name', '')
         bucket_name = _bucket_name if _bucket_name else settings.S3_BUCKET_ID
         gallery_id = kwargs.get('gallery_id', '')
-        verbosity = kwargs.get('verbosity')
-        max_keys = kwargs.get('max_keys')
+        verbosity = kwargs.get('verbosity', 0)
+        max_keys = kwargs.get('max_keys', 1000)
 
         print(f"Syncing bucket '{bucket_name}'")
         list_s3_bucket_objects(
@@ -176,7 +176,7 @@ def update_metadata_objects(image_keys, bucket, verbosity=0):
           f"{len(objects_to_update)}/{len(image_keys)} objects")
 
     counter = 0
-    poke_every = min(50, len(objects_to_update) // 100)
+    poke_every = min(50, max(1, len(objects_to_update) // 100))
 
     print(f"Starting metadata update for {len(objects_to_update)} items. " +
           f"Updating every {poke_every} updates.")
