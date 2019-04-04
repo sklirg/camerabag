@@ -51,10 +51,7 @@ class GalleryNode(DjangoObjectType):
         return None
 
     def resolve_thumbnail(self, info):
-        if self.thumbnail or self.image_set.count() == 0:
-            return self.thumbnail
-
-        return self.image_set.first().image_url
+        return self.get_thumbnail_url()
 
 
 class Query(object):

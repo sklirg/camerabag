@@ -18,6 +18,18 @@ class Gallery(models.Model):
     def __str__(self):
         return self.title
 
+    def get_thumbnail_url(self):
+        if self.thumbnail_image:
+            return self.thumbnail_image.image_url
+
+        if self.thumbnail:
+            return self.thumbnail
+
+        if self.image_set.count() == 0:
+            return self.thumbnail
+
+        return self.image_set.first().image_url
+
     class Meta:
         verbose_name = "Gallery"
         verbose_name_plural = "Galleries"
