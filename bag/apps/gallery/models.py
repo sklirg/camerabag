@@ -11,6 +11,8 @@ class Gallery(models.Model):
     title = models.TextField()
     description = models.TextField(blank=True, null=True)
     thumbnail = models.URLField(blank=True, null=True)
+    thumbnail_image = models.ForeignKey(
+        "Image", null=True, blank=True, on_delete=models.SET_NULL, related_name="+")
     public = models.BooleanField(default=False)
 
     def __str__(self):
