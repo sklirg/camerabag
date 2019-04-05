@@ -220,14 +220,13 @@ def update_metadata(key, bucket, verbosity=0):
     os.remove(path)
 
     image_datetime = get_datetime_from_exif(exif_data['EXIF DateTimeOriginal'])
-    exif_python_data = exif_data_to_python_dict(exif_data)
 
     if verbosity >= 2:
         print(f"Image datetime: {image_datetime} " +
               f"(from: {exif_data['EXIF DateTimeOriginal']})")
 
     image_to_update.datetime = image_datetime
-    image_to_update.exif_data = exif_python_data
+    image_to_update.exif = exif_data_to_python_dict(exif_data)
     image_to_update.save()
 
     if verbosity >= 2:
