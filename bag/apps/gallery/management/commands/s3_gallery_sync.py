@@ -19,6 +19,8 @@ class Command(BaseCommand):
                             help="Bucket name in S3. Uses the configured one by default")
         parser.add_argument('-g', '--gallery_id', type=str,
                             help="ID of a specific gallery")
+        parser.add_argument('-f', '--force', type=bool, default=None,
+                            help="ID of a specific gallery")
         parser.add_argument('-m', '--max-keys', type=int,
                             default=1000,
                             help="Maximum number of keys to fetch")
@@ -27,18 +29,21 @@ class Command(BaseCommand):
         _bucket_name = kwargs.get('bucket_name', '')
         bucket_name = _bucket_name if _bucket_name else settings.S3_BUCKET_ID
         gallery_id = kwargs.get('gallery_id', '')
+        _force = kwargs.get('force')
+        force = _force if _force is not None else False
         verbosity = kwargs.get('verbosity', 0)
         max_keys = kwargs.get('max_keys', 1000)
 
         print(f"Syncing bucket '{bucket_name}'")
         list_s3_bucket_objects(
             bucket_name,
+            force=force,
             max_keys=max_keys,
             verbosity=verbosity,
         )
 
 
-def list_s3_bucket_objects(bucket_name, max_keys=1000, verbosity=0):
+def list_s3_bucket_objects(bucket_name, force=False, max_keys=1000, verbosity=0):
     objects = []
     last_key = ''
     continuation_token = ''
@@ -152,18 +157,21 @@ def list_s3_bucket_objects(bucket_name, max_keys=1000, verbosity=0):
     print(f"Done creating {len(created_images)} images")
 
     update_metadata_objects([i[0] for i in images],
-                            bucket_name, verbosity=verbosity)
+                            bucket_name, force=force, verbosity=verbosity)
 
 
-def update_metadata_objects(image_keys, bucket, verbosity=0):
+def update_metadata_objects(image_keys, bucket, force=False, verbosity=0):
+    if force:
+        print("Running force-update")
     # Get images that are recently added and update them with exif data
+    gallery_id = image_keys[0].split("/")[0]
     probably_fresh_images_timestamp = timezone.now() - timedelta(minutes=30)
     fresh_images = Image.objects.filter(
-        datetime__gte=probably_fresh_images_timestamp)
+        datetime__gte=probably_fresh_images_timestamp) if not force else Image.objects.filter(gallery__id=gallery_id)
     image_ids = [i.title for i in fresh_images]
     image_gallery_ids = [f"{i.gallery.id}/{i.title}" for i in fresh_images]
 
-    print(f"Found {len(fresh_images)} recently added images. " +
+    print(f"Updating {len(fresh_images)} images." +
           "Fetching images to update metadata.")
 
     objects_to_update = []
@@ -183,11 +191,11 @@ def update_metadata_objects(image_keys, bucket, verbosity=0):
     for obj in objects_to_update:
         if counter % poke_every == 0:
             print(f"{counter}/{len(objects_to_update)}")
-        update_metadata(obj, bucket, verbosity=verbosity)
+        update_metadata(obj, bucket, force=force, verbosity=verbosity)
         counter += 1
 
 
-def update_metadata(key, bucket, verbosity=0):
+def update_metadata(key, bucket, force=False, verbosity=0):
     client = boto3.client('s3')
 
     if verbosity >= 2:
