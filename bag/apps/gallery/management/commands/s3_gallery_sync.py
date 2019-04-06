@@ -55,8 +55,8 @@ def list_s3_bucket_objects(bucket_name, force=False, max_keys=1000, verbosity=0)
     }
 
     # Client and request
-    client = boto3.client('s3', aws_access_key_id=settings.CB_S3_AWS_ACCESS_KEY,
-                          aws_secret_access_key=settings.CB_S3_AWS_SECRET_KEY)
+    client = boto3.client('s3', aws_access_key_id=settings.S3_AWS_ACCESS_KEY,
+                          aws_secret_access_key=settings.S3_AWS_SECRET_KEY)
     while has_more and counter < 10:
         response = client.list_objects_v2(**kwargs)
 
@@ -197,7 +197,8 @@ def update_metadata_objects(image_keys, bucket, force=False, verbosity=0):
 
 
 def update_metadata(key, bucket, force=False, verbosity=0):
-    client = boto3.client('s3')
+    client = boto3.client('s3', aws_access_key_id=settings.S3_AWS_ACCESS_KEY,
+                          aws_secret_access_key=settings.S3_AWS_SECRET_KEY)
 
     if verbosity >= 2:
         print(f"Updating metadata for {key}")

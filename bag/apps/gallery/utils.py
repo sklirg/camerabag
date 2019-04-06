@@ -45,7 +45,8 @@ async def create_images_from_files(gallery, path, create=True):
 
         image_timestamp = timezone.now()
         if exif_data and exif_data.get('EXIF DateTimeOriginal', None):
-            image_timestamp = get_datetime_from_exif(exif_data['EXIF DateTimeOriginal'])
+            image_timestamp = get_datetime_from_exif(
+                exif_data['EXIF DateTimeOriginal'])
 
         exif_json = exif_data_to_python_dict(exif_data)
 
