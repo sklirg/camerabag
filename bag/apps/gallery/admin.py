@@ -18,13 +18,20 @@ def sync_galleries_with_s3(modeladmin, request, queryset):
         cmd.handle(gallery_id=gallery.id)
 
 
+def force_sync_galleries_with_s3(modeladmin, request, queryset):
+    cmd = SyncCommand()
+    for gallery in queryset.all():
+        cmd.handle(gallery_id=gallery.id, force=True)
+
+
 @admin.register(Gallery)
 class GalleryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     list_display = ['title', 'public', 'number_of_images']
     list_filter = ['public']
     search_fields = ['title']
-    actions = [make_public, make_not_public, sync_galleries_with_s3]
+    actions = [make_public, make_not_public,
+               sync_galleries_with_s3, sync_galleries_with_s3]
 
     def number_of_images(self, obj):
         return obj.image_set.count()
