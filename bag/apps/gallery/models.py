@@ -7,8 +7,8 @@ from django.contrib.postgres.fields import JSONField
 
 class Gallery(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    slug = models.SlugField()
     title = models.TextField()
+    slug = models.SlugField()
     description = models.TextField(blank=True, null=True)
     thumbnail = models.URLField(blank=True, null=True)
     thumbnail_image = models.ForeignKey(
