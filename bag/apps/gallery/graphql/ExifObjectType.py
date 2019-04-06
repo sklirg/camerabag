@@ -25,6 +25,9 @@ class ExifNode(graphene.ObjectType):
         if not fnumber:
             return 0
 
+        if fnumber.isnumeric():
+            return float(fnumber)
+
         if "/" not in fnumber:
             return 0
 
