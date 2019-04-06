@@ -8,12 +8,16 @@ from graphene_django.filter import DjangoFilterConnectionField
 
 from ..models import Gallery, Image
 
+from .ExifObjectType import ExifNode
+
 
 def get_self_uri(request):
     return f"{request.scheme}://{request.get_host()}"
 
 
 class ImageNode(DjangoObjectType):
+    exif = graphene.Field(ExifNode)
+
     class Meta:
         model = Image
         filter_fields = ['title', 'datetime']
