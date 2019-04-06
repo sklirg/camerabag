@@ -31,7 +31,7 @@ class GalleryAdmin(admin.ModelAdmin):
     list_filter = ['public']
     search_fields = ['title']
     actions = [make_public, make_not_public,
-               sync_galleries_with_s3, sync_galleries_with_s3]
+               sync_galleries_with_s3, force_sync_galleries_with_s3]
 
     def number_of_images(self, obj):
         return obj.image_set.count()
