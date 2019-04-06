@@ -38,12 +38,13 @@ class Command(BaseCommand):
         list_s3_bucket_objects(
             bucket_name,
             force=force,
+            gallery_id=gallery_id,
             max_keys=max_keys,
             verbosity=verbosity,
         )
 
 
-def list_s3_bucket_objects(bucket_name, force=False, max_keys=1000, verbosity=0):
+def list_s3_bucket_objects(bucket_name, force=False, gallery_id='', max_keys=1000, verbosity=0):
     objects = []
     last_key = ''
     continuation_token = ''
@@ -52,6 +53,7 @@ def list_s3_bucket_objects(bucket_name, force=False, max_keys=1000, verbosity=0)
     kwargs = {
         'Bucket': bucket_name,
         'MaxKeys': max_keys,
+        'Prefix': str(gallery_id),
     }
 
     # Client and request
