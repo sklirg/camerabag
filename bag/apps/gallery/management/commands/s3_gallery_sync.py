@@ -3,6 +3,7 @@ import os
 
 from datetime import timedelta
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.utils.text import slugify
@@ -84,6 +85,7 @@ def list_s3_bucket_objects(bucket_name, force=False, gallery_id='', max_keys=100
     galleries = []
     images = []
     allowed_image_file_endings = ['jpg']
+    image_sizes = {}
 
     for obj in objects:
         key = obj.get('Key')
@@ -107,9 +109,25 @@ def list_s3_bucket_objects(bucket_name, force=False, gallery_id='', max_keys=100
                   "Skipping.")
             continue
 
-        if '_thumb' in key:
+        if '_' in key:
+            (raw_image, ending) = image.split("_")
+            size = ending.split(".")[0]
+
+            raw_image = f"{raw_image}.jpg"
+            if raw_image not in image_sizes:
+                image_sizes[raw_image] = []
+
+            absolute_image_url = create_image_url(gallery, image)
+            image_srcset_size_formatted = f"{absolute_image_url} {size}"
+
             if verbosity >= 2:
-                print(f"Skipping thumb file.")
+                print(
+                    f"Adding image size '{image_srcset_size_formatted}' for image {image} (key source: {key}) (url: {absolute_image_url})")
+
+            image_sizes[raw_image].append(image_srcset_size_formatted)
+
+            # We can skip adding this image to the list because we've already added it (or we are going to)
+            # and the image_sizes is checked later on
             continue
 
         # All checks passed, this is an image.
@@ -140,18 +158,35 @@ def list_s3_bucket_objects(bucket_name, force=False, gallery_id='', max_keys=100
         (key, gallery, image) = i
         if image in existing_images:
             if verbosity >= 2:
-                print("Image in existing images.. skipping")
+                print("Image in existing images.. updating some metadata...")
+
+            image_to_update = Image.objects.get(title=image)
+            should_update = False
+
+            if image in image_sizes and image_to_update.sizes != image_sizes:
+                print(f"Updating {image} with image sizes")
+                image_to_update.sizes = image_sizes[image]
+                should_update = True
+
+            if should_update:
+                try:
+                    image_to_update.save()
+                except ValidationError as e:
+                    print(
+                        f"Saving updated image '{image}' failed validation. Error: {e}")
             continue
-        image_url = f"{settings.MEDIA_URL}{gallery}/{image}"
+        image_url = create_image_url(gallery, image)
         images_to_create.append(Image(
             gallery_id=gallery,
             title=image,
             image_url=image_url,
             datetime=timezone.now(),  # ToDo: Get from exif data
             public=False,
+            sizes=image_sizes[image] if image in image_sizes else []
         ))
         if verbosity >= 2:
-            print("Adding new image")
+            num_sizes = 0 if image not in image_sizes else image_sizes[image]
+            print(f"Adding new image with {num_sizes} sizes")
 
     print(f"Creating {len(images_to_create)} images")
 
@@ -243,3 +278,7 @@ def update_metadata(key, bucket, force=False, verbosity=0):
 
     if verbosity >= 2:
         print(f"Updated {key} successfully")
+
+
+def create_image_url(gallery, image):
+    return f"{settings.MEDIA_URL}{gallery}/{image}"
