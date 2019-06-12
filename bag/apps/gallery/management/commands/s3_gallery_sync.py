@@ -66,7 +66,8 @@ def list_s3_bucket_objects(bucket_name, force=False, gallery_id='', max_keys=100
         # USE IS TRUNCATED
         has_more = response.get('IsTruncated', False)
         new_objects = response.get('Contents', [])
-        last_key = new_objects[-1].get('Key', '')
+        last_key = '' if len(
+            new_objects) == 0 else new_objects[-1].get('Key', '')
         total_keys = response.get('KeyCount')
 
         continuation_token = response.get('NextContinuationToken', '')
