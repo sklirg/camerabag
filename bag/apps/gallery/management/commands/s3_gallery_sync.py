@@ -10,6 +10,7 @@ from django.utils.text import slugify
 
 from apps.gallery.models import Gallery, Image
 from apps.gallery.utils import read_exif_data, get_datetime_from_exif, exif_data_to_python_dict
+from apps.gallery.validators import validate_image_sizes_json
 
 
 class Command(BaseCommand):
@@ -125,7 +126,12 @@ def list_s3_bucket_objects(bucket_name, force=False, gallery_id='', max_keys=100
                 print(
                     f"Adding image size '{image_srcset_size_formatted}' for image {image} (key source: {key}) (url: {absolute_image_url})")
 
-            image_sizes[raw_image].append(image_srcset_size_formatted)
+            try:
+                validate_image_sizes_json([image_srcset_size_formatted])
+                image_sizes[raw_image].append(image_srcset_size_formatted)
+            except ValidationError as e:
+                print(
+                    f"Image source invalid '{image}' failed validation. Error: {e}")
 
             # We can skip adding this image to the list because we've already added it (or we are going to)
             # and the image_sizes is checked later on
