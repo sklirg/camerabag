@@ -112,7 +112,8 @@ def list_s3_bucket_objects(bucket_name, force=False, gallery_id='', max_keys=100
             continue
 
         if '_' in key:
-            (raw_image, ending) = image.split("_")
+            (*start, ending) = image.split("_")
+            raw_image = start[0]
             size = ending.split(".")[0]
 
             raw_image = f"{raw_image}.jpg"
