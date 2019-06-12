@@ -50,8 +50,7 @@ class Image(models.Model):
     exif = JSONField(blank=True, null=True)
     public = models.BooleanField(default=False)
     # A JSON array of image srcset values, e.g. `image-320w.jpg 320w`
-    sizes = JSONField(blank=True, null=True,
-                      validators=[validate_image_sizes_json])
+    sizes = JSONField(default=list, validators=[validate_image_sizes_json])
 
     def __str__(self):
         return self.title
