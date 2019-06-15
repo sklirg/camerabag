@@ -36,7 +36,6 @@ class ImageNode(DjangoObjectType):
 
 
 class GalleryNode(DjangoObjectType):
-    thumbnail = graphene.NonNull(graphene.String)
     thumbnail_image = graphene.NonNull(ImageNode)
 
     class Meta:
@@ -54,9 +53,6 @@ class GalleryNode(DjangoObjectType):
         if gallery.public:
             return gallery
         return None
-
-    def resolve_thumbnail(self, info):
-        return self.get_thumbnail_url()
 
 
 class Query(object):
