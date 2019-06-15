@@ -2,6 +2,7 @@ import uuid
 
 from django.conf import settings
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.contrib.postgres.fields import JSONField
 
 from .validators import validate_image_sizes_json
@@ -19,7 +20,15 @@ class Gallery(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        # Require a thumbnail_image if making gallery public
+        if self.public and not self.thumbnail_image:
+            raise ValidationError(
+                "A gallery requires a thumbnail image if it is to be made public")
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.full_clean()
+        return super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
 
     class Meta:
         verbose_name = "Gallery"
