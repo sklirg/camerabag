@@ -36,6 +36,16 @@ class GalleryAdmin(admin.ModelAdmin):
     def number_of_images(self, obj):
         return obj.image_set.count()
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj=obj, **kwargs)
+        if not obj:
+            return form
+
+        form.base_fields["thumbnail_image"].queryset = Image.objects.filter(
+            gallery__id=obj.id)
+
+        return form
+
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):

@@ -37,6 +37,7 @@ class ImageNode(DjangoObjectType):
 
 class GalleryNode(DjangoObjectType):
     thumbnail = graphene.NonNull(graphene.String)
+    thumbnail_image = graphene.NonNull(ImageNode)
 
     class Meta:
         model = Gallery
