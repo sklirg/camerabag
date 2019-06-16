@@ -139,3 +139,7 @@ MEDIA_URL = S3_BUCKET if USE_S3 else '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+CELERY_BROKER_URL = os.getenv("CB_CELERY_BROKER", "redis://localhost:6379")
+CELERY_TASK_ALWAYS_EAGER = os.getenv("CB_CELERY_EAGER", f"{DEBUG}") == "True"
+CELERY_TIMEZONE = TIME_ZONE
