@@ -103,12 +103,11 @@ def sync_s3_bucket(bucket_name, force=False, gallery_id='', max_keys=1000, verbo
                 print(
                     f"Image source invalid '{image}' failed validation. Error: {e}")
 
-            # We can skip adding this image to the list because we've already added it (or we are going to)
-            # and the image_sizes is checked later on
-            continue
+            image = raw_image
 
         # All checks passed, this is an image.
-        images.append((key, gallery, image))
+        if image not in images:
+            images.append((key, gallery, image))
 
     for gallery in galleries:
         try:
