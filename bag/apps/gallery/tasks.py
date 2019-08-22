@@ -102,6 +102,7 @@ def sync_s3_bucket(bucket_name, force=False, gallery_id='', max_keys=1000, verbo
             except ValidationError as e:
                 print(
                     f"Image source invalid '{image}' failed validation. Error: {e}")
+                continue
 
             image = raw_image
 
