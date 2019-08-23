@@ -1,5 +1,6 @@
 import boto3
 import os
+import re
 
 from datetime import timedelta
 from django.conf import settings
@@ -189,11 +190,14 @@ def update_metadata_objects(image_keys, bucket, force=False, verbosity=0):
     print(f"Updating {len(fresh_images)} images." +
           "Fetching images to update metadata.")
 
+    source_image_file_pattern = re.compile(r'(IMGL?_?\d{4}\.jpg)', re.IGNORECASE)
+
     objects_to_update = []
-    for key in image_keys:
-        for image_id in image_ids:
-            if image_id in key:
-                objects_to_update.append(key)
+
+    for image_id in image_gallery_ids:
+        m = source_image_file_pattern.search(image_id)
+        if m:
+            objects_to_update.append(image_id)
 
     print(f"Found cached s3 objects for " +
           f"{len(objects_to_update)}/{len(image_keys)} objects")
