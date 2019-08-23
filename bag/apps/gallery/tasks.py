@@ -108,7 +108,6 @@ def sync_s3_bucket(bucket_name, force=False, gallery_id='', max_keys=1000, verbo
 
         # All checks passed, this is an image.
         if image not in [image[2] for image in images]:
-            print(f"Adding {image} to images list")
             images.append((key, gallery, image))
 
     for gallery in galleries:
