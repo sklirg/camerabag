@@ -1,26 +1,30 @@
 version: "3"
 
 services:
-  django:
+  celery:
     image: sklirg/camerabag:latest
-    volumes:
-      - /media/images:/app/media
+    entrypoint: "/usr/local/bin/python"
+    command: "/usr/local/bin/celery -A bag worker -l info"
     environment:
       - DATABASE_URL
+      - CB_CELERY_BROKER
+      - CB_CELERY_EAGER
+      - CB_S3_BUCKET
+    volumes:
+      - /home/sklirg/.aws:/root/.aws
+  django:
+    image: sklirg/camerabag:latest
+    environment:
+      - DATABASE_URL
+      - CB_CELERY_BROKER
+      - CB_CELERY_EAGER
       - CB_SECRET_KEY
       - CB_S3_BUCKET
+    volumes:
+      - /home/sklirg/.aws:/root/.aws
     deploy:
       mode: replicated
       replicas: 5
     labels:
       - "traefik.frontend.passHostHeader=true"
       - "traefik.camerabag.frontend.rule=Host:camerabag.sklirg.io"
-  nginx:
-    image: nginx:mainline-alpine
-    volumes:
-      - ./nginx-s3-proxy.conf:/etc/nginx/nginx.conf:ro
-      - /var/www/html:/var/www/html
-    labels:
-      - "traefik.frontend.passHostHeader=true"
-      - "traefik.images.frontend.rule=Host:images.sklirg.io"
-      - "traefik.port=80"
