@@ -5,6 +5,7 @@ from django.conf import settings
 from graphene import relay, ObjectType
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from random import randint
 
 from ..models import Gallery, Image
 
@@ -68,3 +69,9 @@ class Query(object):
 
     def resolve_all_galleries(self, info):
         return Gallery.objects.filter(public=True)
+
+    random_image = graphene.Field(ImageNode)
+
+    def resolve_random_image(self, info):
+        num_images = Image.objects.count()
+        return Image.objects.all()[randint(0, num_images - 1)]
