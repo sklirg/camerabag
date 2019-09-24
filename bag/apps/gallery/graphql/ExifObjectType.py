@@ -10,6 +10,7 @@ class ExifNode(graphene.ObjectType):
     lens_model = graphene.NonNull(graphene.String)
     iso = graphene.NonNull(graphene.String)
     shutter_speed = graphene.NonNull(graphene.String)
+    coordinates = graphene.NonNull(graphene.List(graphene.NonNull(graphene.Float)))
 
     def resolve_aperture(self, info):
         return _safe_get(self, 'EXIF FNumber')
@@ -51,6 +52,38 @@ class ExifNode(graphene.ObjectType):
     def resolve_focal_length(self, info):
         return _safe_get(self, 'EXIF FocalLength')
 
+    def resolve_coordinates(self, info):
+        raw_latitude = _safe_get(self, 'GPS GPSLatitude')
+        raw_longitude = _safe_get(self, 'GPS GPSLongitude')
+
+        longitude_ref = _safe_get(self, 'GPS GPSLongitudeRef')  # West/East
+        latitude_ref = _safe_get(self, 'GPS GPSLatitudeRef')  # North/South
+
+        if not raw_latitude and not raw_longitude:
+            return []
+
+        latitude = convert_exif_coord_to_coord(raw_latitude)
+        longitude = convert_exif_coord_to_coord(raw_longitude)
+
+        return [
+            latitude if latitude_ref == 'N' else -latitude,
+            longitude if longitude_ref == 'E' else -longitude,
+        ]
+
 
 def _safe_get(d, key, default=''):
     return d.get(key, default)
+
+def convert_exif_coord_to_coord(coordinate):
+    deg, minutes, seconds = coordinate[1:len(coordinate) - 1].split(',')
+
+    deg = float(deg)
+
+    if '/' in minutes:
+        minutes = float(int(minutes.split('/')[0]) / int(minutes.split('/')[1]))
+    else:
+        minutes = float(minutes)
+
+    seconds = float(seconds)
+
+    return deg + minutes / 60 + seconds / 3600
