@@ -116,7 +116,7 @@ def sync_s3_bucket(bucket_name, force=False, gallery_id='', max_keys=1000, verbo
             g = Gallery.objects.get(id=gallery)
             print(f"Found existing gallery '{g.title}' for '{gallery}'")
         except Gallery.DoesNotExist:
-            Gallery.objects.create(
+            g = Gallery.objects.create(
                 id=gallery,
                 title=gallery,
                 slug=slugify(gallery),
@@ -126,7 +126,7 @@ def sync_s3_bucket(bucket_name, force=False, gallery_id='', max_keys=1000, verbo
 
     only_images = [i[2] for i in images]
     existing_images = \
-        [i.title for i in Image.objects.filter(title__in=only_images)]
+        [i.title for i in Image.objects.filter(gallery__id=g.id, title__in=only_images)]
     print(f"Found {len(existing_images)} existing images " +
           f"in the set of {len(only_images)} images")
 
