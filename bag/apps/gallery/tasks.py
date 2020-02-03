@@ -138,7 +138,7 @@ def sync_s3_bucket(bucket_name, force=False, gallery_id='', max_keys=1000, verbo
             if verbosity >= 2:
                 print("Image in existing images.. updating some metadata...")
 
-            image_to_update = Image.objects.get(title=image)
+            image_to_update = Image.objects.get(gallery__id=gallery, title=image)
             should_update = False
 
             if image in image_sizes and image_to_update.sizes != image_sizes:
