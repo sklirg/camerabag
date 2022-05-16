@@ -28,6 +28,9 @@ def sync_s3_bucket(bucket_name, force=False, gallery_id='', max_keys=1000, verbo
         'Prefix': str(gallery_id),
     }
 
+    if verbosity >= 1:
+        print(f"Syncing gallery {gallery_id} from bucket {bucket_name}")
+
     # Client and request
     client = boto3.client('s3', aws_access_key_id=settings.S3_AWS_ACCESS_KEY,
                           aws_secret_access_key=settings.S3_AWS_SECRET_KEY)
