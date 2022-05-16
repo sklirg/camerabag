@@ -1,0 +1,21 @@
+name: build-image
+
+on:
+  push:
+    branch:
+      - 'main'
+    tags:
+      - '*'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          file: config/prod.Dockerfile
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          push: true
+          tags: sklirg/camerabag:latest,sklirg/camerabag:${{ env.GITHUB_REF }}
