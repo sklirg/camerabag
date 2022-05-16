@@ -3,7 +3,6 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.contrib.postgres.fields import JSONField
 
 from .validators import validate_image_sizes_json
 
@@ -45,10 +44,10 @@ class Image(models.Model):
     longitude = models.FloatField(blank=True, null=True)
     gallery = models.ForeignKey(
         Gallery, null=True, blank=True, on_delete=models.SET_NULL)
-    exif = JSONField(blank=True, null=True)
+    exif = models.JSONField(blank=True, null=True)
     public = models.BooleanField(default=False)
     # A JSON array of image srcset values, e.g. `image-320w.jpg 320w`
-    sizes = JSONField(default=list, validators=[validate_image_sizes_json])
+    sizes = models.JSONField(default=list, validators=[validate_image_sizes_json])
 
     def __str__(self):
         return self.title
