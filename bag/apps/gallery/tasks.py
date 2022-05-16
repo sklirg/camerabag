@@ -175,15 +175,14 @@ def sync_s3_bucket(bucket_name, force=False, gallery_id='', max_keys=1000, verbo
 
     print(f"Done creating {len(created_images)} images")
 
-    update_metadata_objects([i[0] for i in images],
+    update_metadata_objects(gallery_id, [i[0] for i in images],
                             bucket_name, force=force, verbosity=verbosity)
 
 
-def update_metadata_objects(image_keys, bucket, force=False, verbosity=0):
+def update_metadata_objects(gallery_id, image_keys, bucket, force=False, verbosity=0):
     if force:
         print("Running force-update")
     # Get images that are recently added and update them with exif data
-    gallery_id = image_keys[0].split("/")[0]
     probably_fresh_images_timestamp = timezone.now() - timedelta(minutes=30)
     fresh_images = Image.objects.filter(
         datetime__gte=probably_fresh_images_timestamp) if not force else Image.objects.filter(gallery__id=gallery_id)
