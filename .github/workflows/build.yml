@@ -15,7 +15,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           file: config/prod.Dockerfile
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           push: true
           tags: ghcr.io/sklirg/camerabag:latest,ghcr.io/sklirg/camerabag:${{ github.ref_name }}
