@@ -7,7 +7,7 @@ verify_ssl = true
 autopep8 = "*"
 
 [packages]
-django = "==3.2.13"
+django = "==3.2.15"
 mypy = "0.720"
 graphene-django = "2.5.0"
 django-filter = "2.2.0"
